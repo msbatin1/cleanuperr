@@ -1,0 +1,15 @@
+on:
+  push:
+    paths:
+      - 'code/**'
+    branches: [ main ]
+
+jobs:
+  build:
+    uses: flmorg/orchestrator/.github/workflows/build.yml@main
+    secrets: inherit
+
+  # deploy:
+  #   needs: [ build ]
+  #   uses: flmorg/orchestrator/.github/workflows/deploy.yml@main
+  #   secrets: inherit

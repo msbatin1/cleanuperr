@@ -1,0 +1,15 @@
+on:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  deploy:
+    uses: flmorg/universal-workflows/.github/workflows/chart.install.yml@main
+    with:
+      githubContext: ${{ toJSON(github) }}
+      chartRepo: oci://ghcr.io/flmorg
+      chartName: universal-chart
+      version: ^1.0.0
+      valuesPath: chart/values.yaml
+      releaseName: main
+    secrets: inherit
