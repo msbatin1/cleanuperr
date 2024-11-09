@@ -1,4 +1,4 @@
-﻿using Common.Configuration;
+using Common.Configuration;
 using Executable.Jobs;
 using Infrastructure.Verticals.FrozenTorrent;
 
@@ -18,6 +18,7 @@ public static class DependencyInjection
     private static IServiceCollection AddConfiguration(this IServiceCollection services, IConfiguration configuration) =>
         services
             .Configure<QuartzConfig>(configuration.GetSection(nameof(QuartzConfig)))
+            .Configure<QBitConfig>(configuration.GetSection(nameof(QBitConfig)))
             .Configure<SonarrConfig>(configuration.GetSection(nameof(SonarrConfig)));
 
     private static IServiceCollection AddServices(this IServiceCollection services) =>
