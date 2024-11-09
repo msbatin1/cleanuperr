@@ -1,5 +1,6 @@
 ﻿using Common.Configuration;
 using Domain.Sonarr.Queue;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -43,14 +44,22 @@ public sealed class FrozenTorrentHandler
 
             do
             {
-                UriBuilder uriBuilder = new UriBuilder(sonarrInstance.Url);
-                uriBuilder.Path = string.Format(SonarListUriTemplate, page);
+                Uri sonarrUri = new(sonarrInstance.Url, string.Format(SonarListUriTemplate, page));
 
-                HttpRequestMessage sonarrRequest = new(HttpMethod.Get, uriBuilder.Uri);
+                HttpRequestMessage sonarrRequest = new(HttpMethod.Get, sonarrUri);
                 sonarrRequest.Headers.Add("x-api-key", sonarrInstance.ApiKey);
 
                 HttpResponseMessage response = await _httpClient.SendAsync(sonarrRequest);
-                response.EnsureSuccessStatusCode();
+
+                try
+                {
+                    response.EnsureSuccessStatusCode();
+                }
+                catch
+                {
+                    _logger.LogWarning("queue list failed | {uri}", sonarrUri);
+                    throw;
+                }
 
                 string responseBody = await response.Content.ReadAsStringAsync();
                 QueueListResponse? queueResponse = JsonConvert.DeserializeObject<QueueListResponse>(responseBody);
@@ -67,19 +76,24 @@ public sealed class FrozenTorrentHandler
 
                     if (torrent is not { CompletionOn: not null, Downloaded: null or 0 })
                     {
-                        // TODO log skip
+                        _logger.LogInformation("skip | {torrent}", record.Title);
                         continue;
                     }
-        
-                    // delete and block from sonarr
-                    uriBuilder = new(sonarrInstance.Url);
-                    uriBuilder.Path = string.Format(SonarDeleteUriTemplate, record.Id);
                     
-                    sonarrRequest = new(HttpMethod.Delete, uriBuilder.Uri);
+                    sonarrUri = new(sonarrInstance.Url, string.Format(SonarDeleteUriTemplate, record.Id));
+                    sonarrRequest = new(HttpMethod.Delete, sonarrUri);
                     sonarrRequest.Headers.Add("x-api-key", sonarrInstance.ApiKey);
         
                     response = await _httpClient.SendAsync(sonarrRequest);
-                    response.EnsureSuccessStatusCode();
+
+                    try
+                    {
+                        response.EnsureSuccessStatusCode();
+                    }
+                    catch
+                    {
+                        _logger
+                    }
                 }
                 
                 if (queueResponse.Records.Count is 0)
