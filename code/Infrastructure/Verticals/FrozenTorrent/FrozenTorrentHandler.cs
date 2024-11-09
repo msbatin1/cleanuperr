@@ -57,7 +57,7 @@ public sealed class FrozenTorrentHandler
                 }
                 catch
                 {
-                    _logger.LogWarning("queue list failed | {uri}", sonarrUri);
+                    _logger.LogError("queue list failed | {uri}", sonarrUri);
                     throw;
                 }
 
@@ -92,7 +92,8 @@ public sealed class FrozenTorrentHandler
                     }
                     catch
                     {
-                        _logger
+                        _logger.LogError("queue delete failed | {uri}", sonarrUri);
+                        throw;
                     }
                 }
                 
