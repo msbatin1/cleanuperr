@@ -49,6 +49,15 @@ public sealed class BlockedTorrentHandler
             {
                 QueueListResponse queueResponse = await ListQueuedTorrentsAsync(sonarrInstance, page);
                 
+                if (totalRecords is 0)
+                {
+                    totalRecords = queueResponse.TotalRecords;
+                    
+                    _logger.LogInformation(
+                        "{items} items found in queue | {url}",
+                        queueResponse.TotalRecords, sonarrInstance.Url);
+                }
+                
                 foreach (Record record in queueResponse.Records)
                 {
                     var torrent = (await qBitClient.GetTorrentListAsync(new TorrentListQuery { Hashes = [record.DownloadId] }))
@@ -68,11 +77,6 @@ public sealed class BlockedTorrentHandler
                 if (queueResponse.Records.Count is 0)
                 {
                     break;
-                }
-
-                if (totalRecords is 0)
-                {
-                    totalRecords = queueResponse.TotalRecords;
                 }
     
                 processedRecords += queueResponse.Records.Count;
@@ -133,6 +137,8 @@ public sealed class BlockedTorrentHandler
         try
         {
             response.EnsureSuccessStatusCode();
+            
+            _logger.LogInformation("queue item deleted | {record}", record.Title);
         }
         catch
         {
@@ -157,6 +163,8 @@ public sealed class BlockedTorrentHandler
         try
         {
             response.EnsureSuccessStatusCode();
+            
+            _logger.LogInformation("series search triggered | series id: {id}", seriesId);
         }
         catch
         {
