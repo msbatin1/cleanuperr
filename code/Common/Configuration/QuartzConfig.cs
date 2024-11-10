@@ -2,5 +2,5 @@
 
 public sealed class QuartzConfig
 {
-    public required string FrozenTorrentTrigger { get; init; }
+    public required string BlockedTorrentTrigger { get; init; }
 }

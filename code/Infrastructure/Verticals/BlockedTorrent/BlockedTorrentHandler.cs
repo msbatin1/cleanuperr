@@ -1,25 +1,27 @@
-﻿using Common.Configuration;
+﻿using System.Text;
+using Common.Configuration;
 using Domain.Sonarr.Queue;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using QBittorrent.Client;
 
-namespace Infrastructure.Verticals.FrozenTorrent;
+namespace Infrastructure.Verticals.BlockedTorrent;
 
-public sealed class FrozenTorrentHandler
+public sealed class BlockedTorrentHandler
 {
-    private readonly ILogger<FrozenTorrentHandler> _logger;
+    private readonly ILogger<BlockedTorrentHandler> _logger;
     private readonly QBitConfig _qBitConfig;
     private readonly SonarrConfig _sonarrConfig;
     private readonly HttpClient _httpClient;
     
-    private const string SonarListUriTemplate = "/api/v3/queue?page={0}&pageSize=200&sortKey=timeleft";
-    private const string SonarDeleteUriTemplate = "/api/v3/queue/{0}?removeFromClient=true&blocklist=true&skipRedownload=true&changeCategory=false";
-
-    public FrozenTorrentHandler(
-        ILogger<FrozenTorrentHandler> logger,
+    private const string QueueListPathTemplate = "/api/v3/queue?page={0}&pageSize=200&sortKey=timeleft";
+    private const string QueueDeletePathTemplate = "/api/v3/queue/{0}?removeFromClient=true&blocklist=true&skipRedownload=true&changeCategory=false";
+    private const string SonarrCommandUriPath = "/api/v3/command";
+    private const string SearchCommandPayloadTemplate = "{\"name\":\"SeriesSearch\",\"seriesId\":{0}}";
+    
+    public BlockedTorrentHandler(
+        ILogger<BlockedTorrentHandler> logger,
         IOptions<QBitConfig> qBitConfig,
         IOptions<SonarrConfig> sonarrConfig,
         IHttpClientFactory httpClientFactory)
@@ -41,10 +43,11 @@ public sealed class FrozenTorrentHandler
             ushort page = 1;
             int totalRecords = 0;
             int processedRecords = 0;
+            List<int> seriesToBeRefreshed = [];
 
             do
             {
-                Uri sonarrUri = new(sonarrInstance.Url, string.Format(SonarListUriTemplate, page));
+                Uri sonarrUri = new(sonarrInstance.Url, string.Format(QueueListPathTemplate, page));
 
                 HttpRequestMessage sonarrRequest = new(HttpMethod.Get, sonarrUri);
                 sonarrRequest.Headers.Add("x-api-key", sonarrInstance.ApiKey);
@@ -80,7 +83,9 @@ public sealed class FrozenTorrentHandler
                         continue;
                     }
                     
-                    sonarrUri = new(sonarrInstance.Url, string.Format(SonarDeleteUriTemplate, record.Id));
+                    seriesToBeRefreshed.Add(record.SeriesId);
+                    
+                    sonarrUri = new(sonarrInstance.Url, string.Format(QueueDeletePathTemplate, record.Id));
                     sonarrRequest = new(HttpMethod.Delete, sonarrUri);
                     sonarrRequest.Headers.Add("x-api-key", sonarrInstance.ApiKey);
         
@@ -93,6 +98,30 @@ public sealed class FrozenTorrentHandler
                     catch
                     {
                         _logger.LogError("queue delete failed | {uri}", sonarrUri);
+                        throw;
+                    }
+                }
+
+                foreach (int id in seriesToBeRefreshed)
+                {
+                    sonarrUri = new(sonarrInstance.Url, SonarrCommandUriPath);
+                    sonarrRequest = new(HttpMethod.Post, sonarrUri);
+                    sonarrRequest.Content = new StringContent(
+                        SearchCommandPayloadTemplate.Replace("{0}", id.ToString()),
+                        Encoding.UTF8,
+                        "application/json"
+                    );
+                    sonarrRequest.Headers.Add("x-api-key", sonarrInstance.ApiKey);
+                    
+                    response = await _httpClient.SendAsync(sonarrRequest);
+
+                    try
+                    {
+                        response.EnsureSuccessStatusCode();
+                    }
+                    catch
+                    {
+                        _logger.LogError("series search failed | series id: {id}", id);
                         throw;
                     }
                 }

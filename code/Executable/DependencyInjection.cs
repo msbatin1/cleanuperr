@@ -1,6 +1,6 @@
 ﻿using Common.Configuration;
 using Executable.Jobs;
-using Infrastructure.Verticals.FrozenTorrent;
+using Infrastructure.Verticals.BlockedTorrent;
 
 namespace Executable;
 using Quartz;
@@ -23,8 +23,8 @@ public static class DependencyInjection
 
     private static IServiceCollection AddServices(this IServiceCollection services) =>
         services
-            .AddTransient<FrozenTorrentJob>()
-            .AddTransient<FrozenTorrentHandler>();
+            .AddTransient<BlockedTorrentJob>()
+            .AddTransient<BlockedTorrentHandler>();
 
     private static IServiceCollection AddQuartzServices(this IServiceCollection services, IConfiguration configuration) =>
         services
@@ -37,24 +37,24 @@ public static class DependencyInjection
                     throw new NullReferenceException("Quartz configuration is null");
                 }
 
-                q.AddFrozenTorrentJob(config.FrozenTorrentTrigger);
+                q.AddBlockedTorrentJob(config.BlockedTorrentTrigger);
             })
             .AddQuartzHostedService(opt =>
             {
                 opt.WaitForJobsToComplete = true;
             });
 
-    private static void AddFrozenTorrentJob(this IServiceCollectionQuartzConfigurator q, string trigger)
+    private static void AddBlockedTorrentJob(this IServiceCollectionQuartzConfigurator q, string trigger)
     {
-        q.AddJob<FrozenTorrentJob>(opts =>
+        q.AddJob<BlockedTorrentJob>(opts =>
         {
-            opts.WithIdentity(nameof(FrozenTorrentJob));
+            opts.WithIdentity(nameof(BlockedTorrentJob));
         });
 
         q.AddTrigger(opts =>
         {
-            opts.ForJob(nameof(FrozenTorrentJob))
-                .WithIdentity($"{nameof(FrozenTorrentJob)}-trigger")
+            opts.ForJob(nameof(BlockedTorrentJob))
+                .WithIdentity($"{nameof(BlockedTorrentJob)}-trigger")
                 .WithCronSchedule(trigger);
         });
     }
