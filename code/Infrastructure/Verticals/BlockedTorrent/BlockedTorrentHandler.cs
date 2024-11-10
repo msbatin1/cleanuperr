@@ -64,11 +64,6 @@ public sealed class BlockedTorrentHandler
 
                     await DeleteTorrentFromQueueAsync(sonarrInstance, record);
                 }
-
-                foreach (int id in seriesToBeRefreshed)
-                {
-                    await RefreshSeriesAsync(sonarrInstance, id);
-                }
                 
                 if (queueResponse.Records.Count is 0)
                 {
@@ -89,6 +84,11 @@ public sealed class BlockedTorrentHandler
     
                 page++;
             } while (processedRecords < totalRecords);
+            
+            foreach (int id in seriesToBeRefreshed)
+            {
+                await RefreshSeriesAsync(sonarrInstance, id);
+            }
         }
     }
 
