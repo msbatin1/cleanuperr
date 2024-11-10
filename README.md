@@ -48,97 +48,96 @@ where `<NUMBER>` starts from 0.
 
 <details> 
     <summary>Extensions to block</summary>
-    ```
-    *.apk
-    *.bat
-    *.bin
-    *.bmp
-    *.cmd
-    *.com
-    *.db
-    *.diz
-    *.dll
-    *.dmg
-    *.etc
-    *.exe
-    *.gif
-    *.htm
-    *.html
-    *.ico
-    *.ini
-    *.iso
-    *.jar
-    *.jpg
-    *.js
-    *.link
-    *.lnk
-    *.msi
-    *.nfo
-    *.perl
-    *.php
-    *.pl
-    *.png
-    *.ps1
-    *.psc1
-    *.psd1
-    *.psm1
-    *.py
-    *.pyd
-    *.rb
-    *.readme
-    *.reg
-    *.run
-    *.scr
-    *.sh
-    *.sql
-    *.text
-    *.thumb
-    *.torrent
-    *.txt
-    *.url
-    *.vbs
-    *.wsf
-    *.xml
-    *.zipx
-    *.7z
-    *.bdjo
-    *.bdmv
-    *.bin
-    *.bmp
-    *.cci
-    *.clpi
-    *.crt
-    *.dll
-    *.exe
-    *.html
-    *.idx
-    *.inf
-    *.jar
-    *.jpeg
-    *.jpg
-    *.lnk
-    *.m4a
-    *.mpls
-    *.msi
-    *.nfo
-    *.pdf
-    *.png
-    *.rar
-    *(sample).*
-    *sample.mkv
-    *sample.mp4
-    *.sfv
-    *.srt
-    *.sub
-    *.tbl
-    Trailer.*
-    *.txt
-    *.url
-    *.xig
-    *.xml
-    *.xrt
-    *.zip
-    *.zipx
-    *.Lnk
-    ```
+    <pre><code>*.apk
+*.bat
+*.bin
+*.bmp
+*.cmd
+*.com
+*.db
+*.diz
+*.dll
+*.dmg
+*.etc
+*.exe
+*.gif
+*.htm
+*.html
+*.ico
+*.ini
+*.iso
+*.jar
+*.jpg
+*.js
+*.link
+*.lnk
+*.msi
+*.nfo
+*.perl
+*.php
+*.pl
+*.png
+*.ps1
+*.psc1
+*.psd1
+*.psm1
+*.py
+*.pyd
+*.rb
+*.readme
+*.reg
+*.run
+*.scr
+*.sh
+*.sql
+*.text
+*.thumb
+*.torrent
+*.txt
+*.url
+*.vbs
+*.wsf
+*.xml
+*.zipx
+*.7z
+*.bdjo
+*.bdmv
+*.bin
+*.bmp
+*.cci
+*.clpi
+*.crt
+*.dll
+*.exe
+*.html
+*.idx
+*.inf
+*.jar
+*.jpeg
+*.jpg
+*.lnk
+*.m4a
+*.mpls
+*.msi
+*.nfo
+*.pdf
+*.png
+*.rar
+*(sample).*
+*sample.mkv
+*sample.mp4
+*.sfv
+*.srt
+*.sub
+*.tbl
+Trailer.*
+*.txt
+*.url
+*.xig
+*.xml
+*.xrt
+*.zip
+*.zipx
+*.Lnk
+</code></pre>
 </details>
