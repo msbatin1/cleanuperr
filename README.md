@@ -1,7 +1,16 @@
 # cleanuperr
 
+## How it works
+
+1. Add excluded file names to prevent malicious files from being downloaded by qBittorrent.
+2. cleanuperr goes through all items in Sonarr's queue every at every 5th minute.
+3. For each queue item, a call is made to qBittorrent to get the stats of the torrent.
+4. If a torrent is found to be marked as completed, but with 0 downloaded bytes, cleanuperr calls Sonarr to add that torrent to the blocklist.
+5. If any malicious torrents have been found, cleanuperr calls Sonarr to automatically search again.
+
 ## Usage
 
+### Docker
 ```
 docker run \
     -e QuartzConfig__BlockedTorrentTrigger="0 0/10 * * * ?" \
@@ -16,7 +25,7 @@ docker run \
     flaminel/cleanuperr:latest
 ```
 
-## Environment variables
+### Environment variables
 
 | Variable | Required | Description | Default value |
 |---|---|---|---|
@@ -38,16 +47,15 @@ SonarrConfig__Instances__<NUMBER>__ApiKey
 
 where `<NUMBER>` starts from 0.
 
-## How it works
+#
 
-1. Add excluded file names to prevent malicious files from being downloaded by qBittorrent.
-2. cleanuperr goes through all items in Sonarr's queue every at every 5th minute.
-3. For each queue item, a call is made to qBittorrent to get the stats of the torrent.
-4. If a torrent is found to be marked as completed, but with 0 downloaded bytes, cleanuperr calls Sonarr to add that torrent to the blocklist.
-5. If any malicious torrents have been found, cleanuperr calls Sonarr to automatically search again.
-
+### Binaries
+1. Download the binaries from [releases](https://github.com/flmorg/cleanuperr/releases).
+2. Extract them from the zip file.
+3. Edit **appsettings.json**. The paths from this json file correspond with the docker env vars, as described [above](/README.md#environment-variables).
+## Extensions to block in qBittorrent
 <details> 
-    <summary>Extensions to block</summary>
+    <summary>Extensions</summary>
     <pre><code>*.apk
 *.bat
 *.bin
