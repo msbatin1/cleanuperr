@@ -1,78 +1,13 @@
 name: Release
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version number'
-        required: true
+  push:
+    tags:
+      - "v*.*.*"
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-
-      - name: Checkout repository
-        uses: actions/checkout@v2
-      
-      - name: Install dependencies
-        run: dotnet restore code/Executable/Executable.csproj
-
-      - name: Build win-x64
-        run: dotnet publish code/Executable/Executable.csproj -c Release --runtime win-x64 --self-contained -o artifacts/cleanuperr-win /p:PublishSingleFile=true /p:AssemblyVersion=${{ github.event.inputs.version }}
-
-      - name: Build linux-x64
-        run: dotnet publish code/Executable/Executable.csproj -c Release --runtime linux-x64 --self-contained -o artifacts/cleanuperr-linux /p:PublishSingleFile=true /p:AssemblyVersion=${{ github.event.inputs.version }}
-        
-      - name: Build osx-x64
-        run: dotnet publish code/Executable/Executable.csproj -c Release --runtime osx-x64 --self-contained -o artifacts/cleanuperr-osx /p:PublishSingleFile=true /p:AssemblyVersion=${{ github.event.inputs.version }}
-
-      - name: Zip the Win release
-        run: zip ./artifacts/cleanuperr-win.zip ./artifacts/cleanuperr-win/cleanuperr.exe ./artifacts/cleanuperr-win/appsettings.json
-
-      - name: Zip the Linux release
-        run: zip ./artifacts/cleanuperr-linux.zip ./artifacts/cleanuperr-linux/cleanuperr ./artifacts/cleanuperr-win/appsettings.json
-
-      - name: Zip the OSX release
-        run: zip ./artifacts/cleanuperr-osx.zip ./artifacts/cleanuperr-osx/cleanuperr ./artifacts/cleanuperr-win/appsettings.json
-
-      - name: Release
-        id: create_release
-        uses: actions/create-release@v1.1.3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.event.inputs.version }}
-          release_name: Release ${{ github.event.inputs.version }}
-          draft: false
-      
-      - name: Upload cleanuperr-win
-        uses: actions/upload-release-asset@v1.0.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/cleanuperr-win.zip
-          asset_name: cleanuperr-win.zip
-          asset_content_type: application/exe
-
-      - name: Upload cleanuperr-linux
-        uses: actions/upload-release-asset@v1.0.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/cleanuperr-linux.zip
-          asset_name: cleanuperr-linux.zip
-          asset_content_type: application/exe
-  
-      - name: Upload cleanuperr-osx
-        uses: actions/upload-release-asset@v1.0.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/cleanuperr-osx.zip
-          asset_name: cleanuperr-osx.zip
-          asset_content_type: application/exe
+  release:
+    uses: flmorg/universal-workflows/.github/workflows/dotnet.release.yml@main
+    with:
+      githubContext: ${{ toJSON(github) }}
+    secrets: inherit
