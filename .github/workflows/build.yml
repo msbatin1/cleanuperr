@@ -8,4 +8,5 @@ jobs:
     with:
       dockerRepository: flaminel/cleanuperr
       githubContext: ${{ toJSON(github) }}
+      outputName: cleanuperr
     secrets: inherit
