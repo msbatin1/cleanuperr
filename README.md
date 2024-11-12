@@ -3,7 +3,7 @@
 ## How it works
 
 1. Add excluded file names to prevent malicious files from being downloaded by qBittorrent.
-2. cleanuperr goes through all items in Sonarr's queue every at every 5th minute.
+2. cleanuperr goes through all items in Sonarr's queue at every 5th minute.
 3. For each queue item, a call is made to qBittorrent to get the stats of the torrent.
 4. If a torrent is found to be marked as completed, but with 0 downloaded bytes, cleanuperr calls Sonarr to add that torrent to the blocklist.
 5. If any malicious torrents have been found, cleanuperr calls Sonarr to automatically search again.
