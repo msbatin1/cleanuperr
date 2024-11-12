@@ -2,7 +2,7 @@ on:
   push:
     paths:
       - 'code/**'
-    branches: [ main ]
+#    branches: [ main ]
 
 jobs:
   build:
