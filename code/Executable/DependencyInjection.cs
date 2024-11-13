@@ -1,6 +1,7 @@
 ﻿using Common.Configuration;
 using Executable.Jobs;
-using Infrastructure.Verticals.BlockedTorrent;
+using Infrastructure.Verticals.Arr;
+using Infrastructure.Verticals.QueueCleaner;
 
 namespace Executable;
 using Quartz;
@@ -17,44 +18,46 @@ public static class DependencyInjection
 
     private static IServiceCollection AddConfiguration(this IServiceCollection services, IConfiguration configuration) =>
         services
-            .Configure<QuartzConfig>(configuration.GetSection(nameof(QuartzConfig)))
-            .Configure<QBitConfig>(configuration.GetSection(nameof(QBitConfig)))
-            .Configure<SonarrConfig>(configuration.GetSection(nameof(SonarrConfig)));
+            .Configure<QBitConfig>(configuration.GetSection(QBitConfig.SectionName))
+            .Configure<SonarrConfig>(configuration.GetSection(SonarrConfig.SectionName))
+            .Configure<RadarrConfig>(configuration.GetSection(RadarrConfig.SectionName));
 
     private static IServiceCollection AddServices(this IServiceCollection services) =>
         services
-            .AddTransient<BlockedTorrentJob>()
-            .AddTransient<BlockedTorrentHandler>();
+            .AddTransient<SonarrClient>()
+            .AddTransient<RadarrClient>()
+            .AddTransient<QueueCleanerJob>()
+            .AddTransient<QueueCleanerHandler>();
 
     private static IServiceCollection AddQuartzServices(this IServiceCollection services, IConfiguration configuration) =>
         services
             .AddQuartz(q =>
             {
-                QuartzConfig? config = configuration.GetRequiredSection(nameof(QuartzConfig)).Get<QuartzConfig>();
+                TriggersConfig? config = configuration.GetRequiredSection(TriggersConfig.SectionName).Get<TriggersConfig>();
 
                 if (config is null)
                 {
                     throw new NullReferenceException("Quartz configuration is null");
                 }
 
-                q.AddBlockedTorrentJob(config.BlockedTorrentTrigger);
+                q.AddQueueCleanerJob(config.QueueCleaner);
             })
             .AddQuartzHostedService(opt =>
             {
                 opt.WaitForJobsToComplete = true;
             });
 
-    private static void AddBlockedTorrentJob(this IServiceCollectionQuartzConfigurator q, string trigger)
+    private static void AddQueueCleanerJob(this IServiceCollectionQuartzConfigurator q, string trigger)
     {
-        q.AddJob<BlockedTorrentJob>(opts =>
+        q.AddJob<QueueCleanerJob>(opts =>
         {
-            opts.WithIdentity(nameof(BlockedTorrentJob));
+            opts.WithIdentity(nameof(QueueCleanerJob));
         });
 
         q.AddTrigger(opts =>
         {
-            opts.ForJob(nameof(BlockedTorrentJob))
-                .WithIdentity($"{nameof(BlockedTorrentJob)}-trigger")
+            opts.ForJob(nameof(QueueCleanerJob))
+                .WithIdentity($"{nameof(QueueCleanerJob)}-trigger")
                 .WithCronSchedule(trigger);
         });
     }
