@@ -1,8 +1,10 @@
 on:
   push:
-    paths:
-      - 'code/**'
-    branches: [ main ]
+    tags:
+      - "v*.*.*"
+    # paths:
+    #   - 'code/**'
+    # branches: [ main ]
   pull_request:
     paths:
       - 'code/**'
