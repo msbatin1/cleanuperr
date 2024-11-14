@@ -28,7 +28,7 @@ docker run -d \
     -e RADARR__INSTANCES__1__URL="http://localhost:7879" \
     -e RADARR__INSTANCES__1__APIKEY="secret4" \
     ...
-    flaminel/cleanuperr:1.1.0
+    flaminel/cleanuperr:latest
 ```
 
 ### Environment variables
