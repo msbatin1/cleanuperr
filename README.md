@@ -39,11 +39,11 @@ docker run -d \
 | QBITTORRENT__URL | Yes | qBittorrent instance url | http://localhost:8080 |
 | QBITTORRENT__USERNAME | Yes | qBittorrent user | empty |
 | QBITTORRENT__PASSWORD | Yes | qBittorrent password | empty |
-|
+|||||
 | SONARR__ENABLED | No | Whether Sonarr cleanup is enabled or not  | true |
 | SONARR__INSTANCES__0__URL | Yes | First Sonarr instance url | http://localhost:8989 |
 | SONARR__INSTANCES__0__APIKEY | Yes | First Sonarr instance API key | empty |
-|
+|||||
 | RADARR__ENABLED | No | Whether Radarr cleanup is enabled or not  | false |
 | RADARR__INSTANCES__0__URL | Yes | First Radarr instance url | http://localhost:8989 |
 | RADARR__INSTANCES__0__APIKEY | Yes | First Radarr instance API key | empty |
