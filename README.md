@@ -1,5 +1,7 @@
 # cleanuperr
 
+# This tool is actively developed and not yet stable. Join the discord server if you want to get in touch with me as soon as possible (or if you just want to be informed of new releases), so we can squash those pesky bugs together: https://discord.gg/cJYPs9Bt
+
 ## How it works
 
 1. Add excluded file names to prevent malicious files from being downloaded by qBittorrent.
