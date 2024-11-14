@@ -96,7 +96,7 @@ public sealed class QueueCleanerHandler
                 if (torrent is not { CompletionOn: not null, Downloaded: null or 0 })
                 {
                     _logger.LogInformation("skip | {torrent}", record.Title);
-                    return;
+                    continue;
                 }
 
                 itemsToBeRefreshed.Add(GetRecordId(instanceType, record));
