@@ -92,6 +92,11 @@ where `<NUMBER>` starts from 0.
 1. Download the binaries from [releases](https://github.com/flmorg/cleanuperr/releases).
 2. Extract them from the zip file.
 3. Edit **appsettings.json**. The paths from this json file correspond with the docker env vars, as described [above](/README.md#environment-variables).
+
+### Run as a Windows Service
+
+Check out this stackoverflow answer on how to do it: https://stackoverflow.com/a/15719678
+
 ## Extensions to block in qBittorrent
 <details> 
     <summary>Extensions</summary>
